@@ -9,15 +9,10 @@
         </Grid.RenderTransform>
 
         <Border x:Name="Card"
-                Margin="7"
+                Margin="0"
                 Padding="24,24,24,22"
                 CornerRadius="16"
-                Background="{ThemeResource PopupCardBrush}"
-                BorderBrush="{ThemeResource PopupBorderBrush}"
-                BorderThickness="1">
-            <Border.Shadow>
-                <ThemeShadow />
-            </Border.Shadow>
+                Background="{ThemeResource PopupCardBrush}">
             <Grid RowDefinitions="Auto,18,*,18,Auto">
                 <StackPanel Grid.Row="0" HorizontalAlignment="Stretch">
                     <TextBlock x:Name="DeviceNameText"

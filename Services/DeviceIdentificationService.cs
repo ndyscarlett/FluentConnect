@@ -24,7 +24,15 @@ public sealed class DeviceIdentificationService
         "Assets/Devices/SurfaceHeadphones.png",
         0.92);
 
-    private static readonly DeviceVisualProfile Generic = new("generic-audio", null, 0.9);
+    private static readonly DeviceVisualProfile Generic = new(
+        "generic-audio",
+        "Assets/Devices/SurfaceEarbuds_Buds.png",
+        1.0,
+        LeftAsset: "Assets/Devices/SurfaceEarbuds_Buds.png",
+        RightAsset: "Assets/Devices/SurfaceEarbuds_Case.png",
+        AnimationPreset: DeviceAnimationPreset.SplitEarbuds,
+        LeftAssetScale: 0.92,
+        RightAssetScale: 1.18);
 
     public bool IsSurfaceAudioDevice(string name) =>
         name.Contains("Surface", StringComparison.OrdinalIgnoreCase);

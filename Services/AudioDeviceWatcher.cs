@@ -135,8 +135,25 @@ public sealed class AudioDeviceWatcher : IDisposable
     private static string CleanName(string name)
     {
         foreach (var suffix in new[] { " (Stereo)", " (Hands-Free AG Audio)", " Hands-Free AG Audio", " Stereo" })
-            if (name.EndsWith(suffix, StringComparison.OrdinalIgnoreCase)) return name[..^suffix.Length];
-        return name;
+        {
+            if (name.EndsWith(suffix, StringComparison.OrdinalIgnoreCase))
+            {
+                name = name[..^suffix.Length].Trim();
+                break;
+            }
+        }
+
+        // Windows localizes endpoint role names, for example
+        // "Headphones (realme Buds Air6 Pro)" or "Наушники (realme Buds Air6 Pro)".
+        // The text in parentheses is the stable device-facing name.
+        var openParenthesis = name.IndexOf('(');
+        if (openParenthesis > 0 && name.EndsWith(')'))
+        {
+            var deviceName = name[(openParenthesis + 1)..^1].Trim();
+            if (!string.IsNullOrWhiteSpace(deviceName)) return deviceName;
+        }
+
+        return name.Trim();
     }
 
     public void Dispose()
