@@ -1,6 +1,7 @@
 # FluentConnect
 
-FluentConnect is a lightweight, native Windows 11 utility that displays a polished hardware animation when an audio device connects.
+FluentConnect is a lightweight, native Windows 11 utility that displays a polished hardware animation when an audio device connects. Inspired by iOS Airpods connection animation.
+<img width="800" height="450" alt="13-51-02-ezgif com-video-to-gif-converter" src="https://github.com/user-attachments/assets/0b49a93a-2da6-44a5-95df-ff125bdecb07" />
 
 It is designed to feel like part of Windows and Microsoft Surface, using WinUI 3, the Windows App SDK, Fluent motion, per-monitor DPI awareness, system light/dark themes, and a non-activating overlay above the taskbar.
 
