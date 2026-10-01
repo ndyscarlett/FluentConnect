@@ -11,7 +11,7 @@
 
         <Grid x:Name="TitleBar" Grid.Row="0" Padding="16,0">
             <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
-                <FontIcon Glyph="&#xE95B;" FontFamily="Segoe Fluent Icons" FontSize="18" />
+                <Image Width="20" Height="20" Source="/Assets/FluentConnect.png" />
                 <TextBlock Text="FluentConnect" FontFamily="Segoe UI Variable Display, Segoe UI"
                            FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" />
             </StackPanel>

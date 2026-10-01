@@ -14,4 +14,6 @@ public sealed record DeviceVisualProfile(
     double OffsetY = 0,
     string? LeftAsset = null,
     string? RightAsset = null,
-    DeviceAnimationPreset AnimationPreset = DeviceAnimationPreset.Standard);
+    DeviceAnimationPreset AnimationPreset = DeviceAnimationPreset.Standard,
+    double LeftAssetScale = 1.0,
+    double RightAssetScale = 1.0);

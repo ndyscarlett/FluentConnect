@@ -21,7 +21,7 @@ internal static class WindowPlacement
         return AppWindow.GetFromWindowId(id);
     }
 
-    public static void ConfigurePopup(Window window, int logicalWidth, int logicalHeight)
+    public static Windows.Graphics.RectInt32 ConfigurePopup(Window window, int logicalWidth, int logicalHeight)
     {
         var hwnd = WindowNative.GetWindowHandle(window);
         var appWindow = GetAppWindow(window);
@@ -55,7 +55,9 @@ internal static class WindowPlacement
         var margin = (int)Math.Round(16 * scale);
         var x = info.rcWork.Left + ((info.rcWork.Right - info.rcWork.Left - width) / 2);
         var y = info.rcWork.Bottom - height - margin;
-        appWindow.MoveAndResize(new Windows.Graphics.RectInt32(x, y, width, height));
+        var finalBounds = new Windows.Graphics.RectInt32(x, y, width, height);
+        appWindow.MoveAndResize(finalBounds);
+        return finalBounds;
     }
 
     public static void ConfigureSettings(Window window, int width = 560, int height = 620)

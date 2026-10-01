@@ -89,8 +89,8 @@ public sealed partial class ConnectionPopup : Window
         var asset = identification.ResolveExistingAsset(profile.DisplayAsset);
         var leftAsset = identification.ResolveExistingAsset(profile.LeftAsset) ?? asset;
         var rightAsset = identification.ResolveExistingAsset(profile.RightAsset) ?? asset;
-        LeftArtworkTransform.ScaleX = LeftArtworkTransform.ScaleY = profile.AssetScale;
-        RightArtworkTransform.ScaleX = RightArtworkTransform.ScaleY = profile.AssetScale;
+        LeftArtworkTransform.ScaleX = LeftArtworkTransform.ScaleY = profile.AssetScale * profile.LeftAssetScale;
+        RightArtworkTransform.ScaleX = RightArtworkTransform.ScaleY = profile.AssetScale * profile.RightAssetScale;
         if (leftAsset is null || rightAsset is null)
         {
             LeftDeviceArtwork.Visibility = Visibility.Collapsed;

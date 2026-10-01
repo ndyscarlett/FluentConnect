@@ -10,7 +10,9 @@ public sealed class DeviceIdentificationService
         1.0,
         LeftAsset: "Assets/Devices/SurfaceEarbuds_Buds.png",
         RightAsset: "Assets/Devices/SurfaceEarbuds_Case.png",
-        AnimationPreset: DeviceAnimationPreset.SplitEarbuds);
+        AnimationPreset: DeviceAnimationPreset.SplitEarbuds,
+        LeftAssetScale: 0.92,
+        RightAssetScale: 1.18);
 
     private static readonly DeviceVisualProfile Headphones2 = new(
         "surface-headphones-2",

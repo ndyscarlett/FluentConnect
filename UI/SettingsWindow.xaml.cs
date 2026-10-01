@@ -24,6 +24,8 @@ public sealed partial class SettingsWindow : Window
         SystemBackdrop = new MicaBackdrop();
         ApplySystemTheme();
         WindowPlacement.ConfigureSettings(this);
+        var iconPath = Path.Combine(AppContext.BaseDirectory, "Assets", "FluentConnect.ico");
+        if (File.Exists(iconPath)) WindowPlacement.GetAppWindow(this).SetIcon(iconPath);
 
         AnyAudioDeviceCheckBox.IsChecked = settings.Current.AnyAudioDevice;
         ShowAnimationCheckBox.IsChecked = settings.Current.ShowConnectionAnimation;

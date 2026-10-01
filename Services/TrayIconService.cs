@@ -28,6 +28,7 @@ public sealed class TrayIconService : IDisposable
     private readonly Action _showTest;
     private readonly Action _exit;
     private readonly IntPtr _window;
+    private readonly bool _ownsIcon;
     private NotifyIconData _data;
 
     public TrayIconService(Action showSettings, Action showTest, Action exit)
@@ -41,11 +42,17 @@ public sealed class TrayIconService : IDisposable
         if (_window == IntPtr.Zero) throw new InvalidOperationException("Could not create the tray message window.");
         Instances[_window] = this;
 
+        var iconPath = Path.Combine(AppContext.BaseDirectory, "Assets", "FluentConnect.ico");
+        var customIcon = File.Exists(iconPath)
+            ? LoadImage(IntPtr.Zero, iconPath, 1, 0, 0, 0x10 | 0x40)
+            : IntPtr.Zero;
+        _ownsIcon = customIcon != IntPtr.Zero;
+        var icon = _ownsIcon ? customIcon : LoadIcon(IntPtr.Zero, new IntPtr(32512));
         _data = new NotifyIconData
         {
             cbSize = Marshal.SizeOf<NotifyIconData>(), hWnd = _window, uID = 1,
             uFlags = NifMessage | NifIcon | NifTip, uCallbackMessage = CallbackMessage,
-            hIcon = LoadIcon(IntPtr.Zero, new IntPtr(32512)), szTip = "FluentConnect",
+            hIcon = icon, szTip = "FluentConnect",
             szInfo = string.Empty, szInfoTitle = string.Empty
         };
         Shell_NotifyIcon(NimAdd, ref _data);
@@ -99,6 +106,7 @@ public sealed class TrayIconService : IDisposable
     public void Dispose()
     {
         Shell_NotifyIcon(NimDelete, ref _data);
+        if (_ownsIcon && _data.hIcon != IntPtr.Zero) DestroyIcon(_data.hIcon);
         Instances.TryRemove(_window, out _);
         DestroyWindow(_window);
     }
@@ -142,6 +150,8 @@ public sealed class TrayIconService : IDisposable
     [DllImport("kernel32.dll", CharSet = CharSet.Unicode)] private static extern IntPtr GetModuleHandle(string? moduleName);
     [DllImport("shell32.dll", CharSet = CharSet.Unicode)] [return: MarshalAs(UnmanagedType.Bool)] private static extern bool Shell_NotifyIcon(uint message, ref NotifyIconData data);
     [DllImport("user32.dll")] private static extern IntPtr LoadIcon(IntPtr instance, IntPtr iconName);
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)] private static extern IntPtr LoadImage(IntPtr instance, string name, uint type, int width, int height, uint load);
+    [DllImport("user32.dll")] [return: MarshalAs(UnmanagedType.Bool)] private static extern bool DestroyIcon(IntPtr icon);
     [DllImport("user32.dll")] private static extern IntPtr CreatePopupMenu();
     [DllImport("user32.dll", CharSet = CharSet.Unicode)] [return: MarshalAs(UnmanagedType.Bool)] private static extern bool AppendMenu(IntPtr menu, uint flags, int id, string? text);
     [DllImport("user32.dll")] [return: MarshalAs(UnmanagedType.Bool)] private static extern bool DestroyMenu(IntPtr menu);

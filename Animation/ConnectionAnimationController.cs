@@ -1,6 +1,9 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
+using Microsoft.UI.Xaml.Hosting;
+using Microsoft.UI.Composition;
+using System.Numerics;
 
 namespace FluentConnect.Animation;
 
@@ -20,7 +23,9 @@ public sealed class ConnectionAnimationController
     private readonly TranslateTransform _batteryTransform;
     private readonly FrameworkElement _glow;
     private readonly ScaleTransform _glowTransform;
+    private readonly Visual _rootVisual;
     private Storyboard? _active;
+    private const float SlideDistance = 110f;
 
     public ConnectionAnimationController(
         FrameworkElement root, CompositeTransform rootTransform,
@@ -33,6 +38,7 @@ public sealed class ConnectionAnimationController
     {
         _root = root;
         _rootTransform = rootTransform;
+        _rootVisual = ElementCompositionPreview.GetElementVisual(root);
         _artwork = artwork;
         _artworkTransform = artworkTransform;
         _leftArtwork = leftArtwork;
@@ -50,9 +56,9 @@ public sealed class ConnectionAnimationController
     public void StartEntrance(bool showBattery)
     {
         Stop();
-        _root.Opacity = 0;
-        _rootTransform.TranslateY = -14;
-        _rootTransform.ScaleX = _rootTransform.ScaleY = 0.96;
+        _root.Opacity = 1;
+        _rootTransform.TranslateY = 0;
+        _rootTransform.ScaleX = _rootTransform.ScaleY = 1;
         _artwork.Opacity = 0;
         _artworkTransform.TranslateY = 7;
         _artworkTransform.ScaleX = _artworkTransform.ScaleY = 0.9;
@@ -72,10 +78,7 @@ public sealed class ConnectionAnimationController
         _glowTransform.ScaleX = _glowTransform.ScaleY = 0.75;
 
         var storyboard = new Storyboard();
-        Add(storyboard, _root, "Opacity", 0, 1, 0, 250);
-        Add(storyboard, _rootTransform, "TranslateY", -14, 0, 0, 250);
-        Add(storyboard, _rootTransform, "ScaleX", 0.96, 1, 0, 250);
-        Add(storyboard, _rootTransform, "ScaleY", 0.96, 1, 0, 250);
+        AnimateSurface(SlideDistance, 0, 0, 1, 320);
 
         Add(storyboard, _artwork, "Opacity", 0, 1, 100, 230);
         Add(storyboard, _artworkTransform, "TranslateY", 7, 0, 100, 260);
@@ -108,24 +111,48 @@ public sealed class ConnectionAnimationController
 
     public Task StartExitAsync(bool fast)
     {
-        Stop();
+        _active?.Stop();
+        _active = null;
         var duration = fast ? 140 : 200;
-        var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
-        var storyboard = new Storyboard();
-        Add(storyboard, _root, "Opacity", _root.Opacity, 0, 0, duration);
-        Add(storyboard, _rootTransform, "TranslateY", _rootTransform.TranslateY, -8, 0, duration);
-        Add(storyboard, _rootTransform, "ScaleX", _rootTransform.ScaleX, 0.985, 0, duration);
-        Add(storyboard, _rootTransform, "ScaleY", _rootTransform.ScaleY, 0.985, 0, duration);
-        storyboard.Completed += (_, _) => completion.TrySetResult();
-        _active = storyboard;
-        storyboard.Begin();
-        return completion.Task;
+        return AnimateSurface(0, SlideDistance, 1, 0, duration);
     }
 
     public void Stop()
     {
         _active?.Stop();
         _active = null;
+        _rootVisual.StopAnimation("Offset");
+        _rootVisual.StopAnimation("Opacity");
+    }
+
+    private Task AnimateSurface(float fromY, float toY, float fromOpacity, float toOpacity, int durationMs)
+    {
+        var compositor = _rootVisual.Compositor;
+        var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var batch = compositor.CreateScopedBatch(CompositionBatchTypes.Animation);
+        var easing = toY > fromY
+            ? compositor.CreateCubicBezierEasingFunction(
+                new Vector2(0.40f, 0.0f), new Vector2(1.0f, 1.0f))
+            : compositor.CreateCubicBezierEasingFunction(
+                new Vector2(0.20f, 0.0f), new Vector2(0.15f, 1.0f));
+
+        var offset = compositor.CreateVector3KeyFrameAnimation();
+        offset.InsertKeyFrame(0, new Vector3(0, fromY, 0));
+        offset.InsertKeyFrame(1, new Vector3(0, toY, 0), easing);
+        offset.Duration = TimeSpan.FromMilliseconds(durationMs);
+        offset.StopBehavior = AnimationStopBehavior.SetToFinalValue;
+
+        var opacity = compositor.CreateScalarKeyFrameAnimation();
+        opacity.InsertKeyFrame(0, fromOpacity);
+        opacity.InsertKeyFrame(1, toOpacity, easing);
+        opacity.Duration = TimeSpan.FromMilliseconds(durationMs);
+        opacity.StopBehavior = AnimationStopBehavior.SetToFinalValue;
+
+        _rootVisual.StartAnimation("Offset", offset);
+        _rootVisual.StartAnimation("Opacity", opacity);
+        batch.Completed += (_, _) => completion.TrySetResult();
+        batch.End();
+        return completion.Task;
     }
 
     private static void Add(Storyboard storyboard, DependencyObject target, string property,
