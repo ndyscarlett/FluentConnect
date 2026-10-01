@@ -1,0 +1,29 @@
+<Application
+    x:Class="FluentConnect.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="PopupCardBrush" Color="#F4FCFCFC" />
+                    <SolidColorBrush x:Key="PopupBorderBrush" Color="#23000000" />
+                    <SolidColorBrush x:Key="PopupSecondaryBrush" Color="#B3000000" />
+                    <SolidColorBrush x:Key="ArtworkPlateBrush" Color="#0A000000" />
+                    <SolidColorBrush x:Key="SettingsCardBrush" Color="#CCFFFFFF" />
+                    <SolidColorBrush x:Key="SettingsCardBorderBrush" Color="#19000000" />
+                    <SolidColorBrush x:Key="SettingsDividerBrush" Color="#14000000" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="PopupCardBrush" Color="#E92B2B2B" />
+                    <SolidColorBrush x:Key="PopupBorderBrush" Color="#2EFFFFFF" />
+                    <SolidColorBrush x:Key="PopupSecondaryBrush" Color="#C5FFFFFF" />
+                    <SolidColorBrush x:Key="ArtworkPlateBrush" Color="#0FFFFFFF" />
+                    <SolidColorBrush x:Key="SettingsCardBrush" Color="#B8323232" />
+                    <SolidColorBrush x:Key="SettingsCardBorderBrush" Color="#28FFFFFF" />
+                    <SolidColorBrush x:Key="SettingsDividerBrush" Color="#20FFFFFF" />
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
